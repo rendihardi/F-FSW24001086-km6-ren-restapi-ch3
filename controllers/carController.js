@@ -23,7 +23,23 @@ const getCars = (req, res, next) => {
   });
 };
 
+// Get Car by id
+const getCarById = (req, res, next) => {
+  const id = req.params.id;
+
+  // menggunakan array method utk membantu menemukan spesifik data
+  const car = cars.find((carSearch) => carSearch.id === id);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      car,
+    },
+  });
+};
+
 module.exports = {
   defaultRouter,
   getCars,
+  getCarById,
 };
