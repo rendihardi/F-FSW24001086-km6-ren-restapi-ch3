@@ -26,10 +26,8 @@ const getCars = (req, res, next) => {
 // Get Car by id
 const getCarById = (req, res, next) => {
   const id = req.params.id;
-
   // menggunakan array method utk membantu menemukan spesifik data
   const car = cars.find((carSearch) => carSearch.id === id);
-
   res.status(200).json({
     status: "success",
     data: {
@@ -38,8 +36,24 @@ const getCarById = (req, res, next) => {
   });
 };
 
+// Creat new Data Car
+const createCar = (req, res) => {
+  const newCar = req.body;
+  cars.push(newCar);
+
+  fs.writeFile(`${__dirname}/data/cars.json`, JSON.stringify(cars), (err) => {
+    res.status(201).json({
+      status: "success",
+      data: {
+        car: newCar,
+      },
+    });
+  });
+};
+
 module.exports = {
   defaultRouter,
   getCars,
   getCarById,
+  createCar,
 };
