@@ -28,6 +28,13 @@ const getCarById = (req, res, next) => {
   const id = req.params.id;
   // menggunakan array method utk membantu menemukan spesifik data
   const car = cars.find((carSearch) => carSearch.id === id);
+
+  if (!car) {
+    return res.status(404).json({
+      status: "fail",
+      message: `car dengan ID : ${id} gak ada`,
+    });
+  }
   res.status(200).json({
     status: "success",
     data: {
@@ -36,19 +43,25 @@ const getCarById = (req, res, next) => {
   });
 };
 
-// Creat new Data Car
+// Create a new car
 const createCar = (req, res) => {
+  console.log(req.body);
   const newCar = req.body;
   cars.push(newCar);
 
-  fs.writeFile(`${__dirname}/data/cars.json`, JSON.stringify(cars), (err) => {
-    res.status(201).json({
-      status: "success",
-      data: {
-        car: newCar,
-      },
-    });
-  });
+  fs.writeFile(
+    `${__dirname}/../data/cars.json`,
+    JSON.stringify(cars),
+    (err) => {
+      res.status(201).json({
+        status: "success",
+        message: "Data berhasil ditambahkan !",
+        data: {
+          car: newCar,
+        },
+      });
+    }
+  );
 };
 
 // Update Data Car
@@ -70,12 +83,48 @@ const updateCar = (req, res) => {
   cars[carIndex] = { ...cars[carIndex], ...req.body };
 
   // 4. melakukan update di dokumen json nya
-  fs.writeFile(`${__dirname}/data/cars.json`, JSON.stringify(cars), (err) => {
-    res.status(200).json({
-      status: "success",
-      message: "berhasil update data",
+  fs.writeFile(
+    `${__dirname}/../data/cars.json`,
+    JSON.stringify(cars),
+    (err) => {
+      res.status(200).json({
+        status: "success",
+        message: "berhasil update data",
+      });
+    }
+  );
+};
+
+// Delete cata car
+const deleteCar = (req, res) => {
+  const id = req.params.id;
+
+  // 1. melakukan pencarian data yg sesuai parameter id nya
+  const car = cars.find((carSearch) => carSearch.id === id);
+  const carIndex = cars.findIndex((carSearch) => carSearch.id === id);
+
+  // 2. jika data tidak ditemukan
+  if (!car) {
+    return res.status(404).json({
+      status: "fail",
+      message: `car dengan ID : ${id} gak ada`,
     });
-  });
+  }
+
+  // 3. kalau ada, berarti delete data nya
+  cars.splice(carIndex, 1);
+
+  // 4. melakukan delete di dokumen json nya
+  fs.writeFile(
+    `${__dirname}/../data/cars.json`,
+    JSON.stringify(cars),
+    (err) => {
+      res.status(200).json({
+        status: "success",
+        message: "berhasil delete data",
+      });
+    }
+  );
 };
 
 module.exports = {
@@ -84,4 +133,5 @@ module.exports = {
   getCarById,
   createCar,
   updateCar,
+  deleteCar,
 };
