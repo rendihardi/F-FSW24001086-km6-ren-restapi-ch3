@@ -51,9 +51,37 @@ const createCar = (req, res) => {
   });
 };
 
+// Update Data Car
+const updateCar = (req, res) => {
+  const id = req.params.id;
+
+  // 1. search car sesuai id
+  const car = cars.find((carSearch) => carSearch.id === id);
+  const carIndex = cars.findIndex((carSearch) => carSearch.id === id);
+
+  // 2. cek data car
+  if (!car) {
+    return res.status(404).json({
+      status: "fail",
+      message: `car dengan ID : ${id} gak ada`,
+    });
+  }
+  // 3.  object assign = menggabungkan objek OR spread operator
+  cars[carIndex] = { ...cars[carIndex], ...req.body };
+
+  // 4. melakukan update di dokumen json nya
+  fs.writeFile(`${__dirname}/data/cars.json`, JSON.stringify(cars), (err) => {
+    res.status(200).json({
+      status: "success",
+      message: "berhasil update data",
+    });
+  });
+};
+
 module.exports = {
   defaultRouter,
   getCars,
   getCarById,
   createCar,
+  updateCar,
 };
